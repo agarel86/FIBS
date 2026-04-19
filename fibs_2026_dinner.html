@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIBS 2026 — Dinner at La Cigale</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2744;
+    --gold: #c9a84c;
+    --cream: #faf8f2;
+    --sage: #4a7c59;
+    --wine: #6b2737;
+    --warm-gray: #8a8278;
+    --border: #e0dbd2;
+    --card-bg: #ffffff;
+    --validated-bg: #eaf6ed;
+    --validated-border: #4a7c59;
+    --text: #2c2a26;
+    --text-light: #6b6760;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .hero {
+    background: var(--navy);
+    color: white;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 50%, rgba(107,39,55,0.15) 0%, transparent 60%);
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    position: relative;
+  }
+  .hero .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--gold);
+    margin-top: 0.5rem;
+    position: relative;
+  }
+  .hero .details {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    position: relative;
+  }
+  .ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0.8rem 0 0;
+    position: relative;
+  }
+  .ornament span { display: block; width: 60px; height: 1px; background: var(--gold); opacity: 0.4; }
+  .ornament .diamond { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); flex-shrink: 0; }
+  .menu-banner { max-width: 780px; margin: 2rem auto 0; padding: 0 1.5rem; }
+  .menu-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+  }
+  .menu-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--navy);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .course { margin-bottom: 1.2rem; }
+  .course-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--warm-gray); margin-bottom: 0.4rem; }
+  .course-options { display: flex; flex-direction: column; gap: 0.15rem; }
+  .course-option { font-family: 'Playfair Display', serif; font-size: 0.92rem; color: var(--text); line-height: 1.45; }
+  .course-or { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.15em; margin: 0.2rem 0; }
+  .course-divider { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 0.8rem 0; }
+  .course-divider span { font-size: 0.6rem; color: var(--gold); letter-spacing: 0.3em; }
+  .counter-bar { max-width: 780px; margin: 1.5rem auto 0; padding: 0 1.5rem; }
+  .counter-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  }
+  .counter-text { font-size: 0.85rem; color: var(--text-light); }
+  .counter-text strong { color: var(--sage); font-weight: 600; }
+  .btn-group { display: flex; gap: 0.5rem; }
+  .btn-export {
+    background: var(--navy); color: white; border: none;
+    padding: 0.55rem 1.2rem; border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500;
+    cursor: pointer; letter-spacing: 0.03em; transition: background 0.2s;
+  }
+  .btn-export:hover { background: #253a5e; }
+  .btn-refresh {
+    background: transparent; color: var(--navy); border: 1.5px solid var(--navy);
+    padding: 0.55rem 1rem; border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500;
+    cursor: pointer; transition: background 0.2s, color 0.2s;
+  }
+  .btn-refresh:hover { background: var(--navy); color: white; }
+  .save-indicator {
+    max-width: 780px; margin: 0.6rem auto 0; padding: 0 1.5rem;
+    text-align: center; font-size: 0.72rem; color: var(--warm-gray);
+    min-height: 1.2rem; transition: opacity 0.3s;
+  }
+  .save-indicator.flash { color: var(--sage); font-weight: 500; }
+  .participants {
+    max-width: 780px; margin: 0.8rem auto 2.5rem; padding: 0 1.5rem;
+    display: flex; flex-direction: column; gap: 0.6rem;
+  }
+  .participant-card {
+    background: var(--card-bg); border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 1rem 1.3rem; transition: border-color 0.35s, background 0.35s, box-shadow 0.35s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  }
+  .participant-card.validated {
+    border-color: var(--validated-border); background: var(--validated-bg);
+    box-shadow: 0 1px 8px rgba(74,124,89,0.1);
+  }
+  .participant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
+  .participant-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); }
+  .participant-school { font-size: 0.75rem; color: var(--warm-gray); letter-spacing: 0.05em; }
+  .participant-badge { font-size: 0.65rem; padding: 0.2rem 0.55rem; border-radius: 20px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .badge-validated { background: var(--sage); color: white; }
+  .badge-pending { background: transparent; color: var(--warm-gray); border: 1px solid var(--border); }
+  .selections { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
+  .course-group label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--warm-gray); display: block; margin-bottom: 0.3rem; font-weight: 500; }
+  .radio-group { display: flex; flex-direction: column; gap: 0.25rem; }
+  .radio-option { display: flex; align-items: flex-start; gap: 0.4rem; cursor: pointer; padding: 0.3rem 0.45rem; border-radius: 5px; transition: background 0.2s; line-height: 1.3; }
+  .radio-option:hover { background: rgba(0,0,0,0.03); }
+  .radio-option input[type="radio"] {
+    appearance: none; -webkit-appearance: none; width: 14px; height: 14px;
+    border: 1.5px solid var(--border); border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative;
+  }
+  .radio-option input[type="radio"]:checked { border-color: var(--sage); background: var(--sage); }
+  .radio-option input[type="radio"]:checked::after {
+    content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 4px; height: 4px; border-radius: 50%; background: white;
+  }
+  .radio-label { font-size: 0.78rem; color: var(--text); line-height: 1.35; }
+  .validate-row { margin-top: 0.7rem; display: flex; justify-content: flex-end; }
+  .btn-validate {
+    background: var(--navy); color: white; border: none;
+    padding: 0.45rem 1.1rem; border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 500;
+    cursor: pointer; transition: background 0.2s, transform 0.15s; letter-spacing: 0.02em;
+  }
+  .btn-validate:hover { background: #253a5e; transform: translateY(-1px); }
+  .btn-validate.done { background: var(--sage); cursor: default; }
+  .btn-validate.done:hover { transform: none; }
+  .btn-reset {
+    background: transparent; color: var(--warm-gray); border: 1px solid var(--border);
+    padding: 0.45rem 0.9rem; border-radius: 6px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem; cursor: pointer; margin-right: 0.5rem;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-reset:hover { color: var(--wine); border-color: var(--wine); }
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(250,248,242,0.85);
+    display: flex; align-items: center; justify-content: center; z-index: 999;
+    font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--navy);
+  }
+  @keyframes pulse { 0%,100% { opacity:0.4; } 50% { opacity:1; } }
+  .loading-overlay span { animation: pulse 1.4s ease-in-out infinite; }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.8rem; }
+    .menu-card { padding: 1.5rem 1.2rem; }
+    .selections { grid-template-columns: 1fr; }
+    .participant-header { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+    .counter-inner { flex-direction: column; gap: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading-overlay"><span>Loading selections…</span></div>
+
+<div class="hero">
+  <h1>FIBS 2026</h1>
+  <div class="subtitle">Dinner at La Cigale</div>
+  <div class="details">Monday, May 4th — 21:00 · Nantes</div>
+  <div class="ornament"><span></span><div class="diamond"></div><span></span></div>
+</div>
+
+<div class="menu-banner">
+  <div class="menu-card">
+    <h2>Menu</h2>
+    <div class="course">
+      <div class="course-label">Starter</div>
+      <div class="course-options">
+        <div class="course-option">Asparagus panna cotta with salpicon, trout roe & smoked cream</div>
+        <div class="course-or">or</div>
+        <div class="course-option">Duck foie gras terrine, red wine–poached grapes</div>
+      </div>
+    </div>
+    <div class="course-divider"><span>✦ ✦ ✦</span></div>
+    <div class="course">
+      <div class="course-label">Main Course</div>
+      <div class="course-options">
+        <div class="course-option">Bacon-wrapped monkfish medallion, cocktail tomato & roasted gem lettuce</div>
+        <div class="course-or">or</div>
+        <div class="course-option">Roasted lamb noisette, spring vegetables & morel sauce</div>
+        <div class="course-or">or</div>
+        <div class="course-option">🌿 Vegetarian option</div>
+      </div>
+    </div>
+    <div class="course-divider"><span>✦ ✦ ✦</span></div>
+    <div class="course">
+      <div class="course-label">Dessert</div>
+      <div class="course-options">
+        <div class="course-option">Valrhona grand cru chocolate tart with fleur de sel, cocoa & sesame nougatine</div>
+        <div class="course-or">or</div>
+        <div class="course-option">Seasonal macaron</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="counter-bar">
+  <div class="counter-inner">
+    <div class="counter-text">Validated: <strong id="counter">0</strong> / <strong id="total">45</strong></div>
+    <div class="btn-group">
+      <button class="btn-refresh" onclick="loadFromStorage()" title="Reload latest selections from all users">↻ Refresh</button>
+      <button class="btn-export" onclick="exportChoices()">Export CSV</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-indicator" id="save-indicator"></div>
+
+<div class="participants" id="participants-list"></div>
+
+<script>
+const participants = [
+  { name: "Ahn, Jung-Hyun", school: "NEOMA" },
+  { name: "Attaoui, Sami", school: "NEOMA" },
+  { name: "Axenrod, Michael", school: "ESCP" },
+  { name: "Bennouri, Moez", school: "MBS" },
+  { name: "Bernard, Carole", school: "EM Grenoble" },
+  { name: "Boustanifar, Hamid", school: "EDHEC" },
+  { name: "Calamia, Anna", school: "TBS" },
+  { name: "Choi, Hyung-Eun", school: "NEOMA" },
+  { name: "Coqueret, Guillaume", school: "EM Lyon" },
+  { name: "Darolles, Serge", school: "Dauphine" },
+  { name: "de Jong, Marielle", school: "EM Grenoble" },
+  { name: "Demetriades, Elias", school: "Audencia" },
+  { name: "Filipovic, Zoran", school: "Dauphine" },
+  { name: "Garel, Alexandre", school: "Audencia" },
+  { name: "Girard-Guerraud, Carine", school: "Audencia" },
+  { name: "Gu, Zhenjiang", school: "EM Grenoble" },
+  { name: "Hudd-Simon, Chrystelle", school: "Audencia" },
+  { name: "Imbet, Juan", school: "Dauphine" },
+  { name: "Kalaitzoglou, Iordanis", school: "Audencia" },
+  { name: "Lazos, Aristogenis", school: "Audencia" },
+  { name: "Le Courtois, Oliver", school: "EM Lyon" },
+  { name: "Manu, Sylvester Adasi", school: "NEOMA" },
+  { name: "Miffre, Joelle", school: "Audencia" },
+  { name: "Noël, Antoine", school: "NEOMA" },
+  { name: "Pataillot, Laurent", school: "IESEG" },
+  { name: "Perignon, Christophe", school: "HEC" },
+  { name: "Redor, Etienne", school: "Audencia" },
+  { name: "Rees, Michael", school: "Audencia" },
+  { name: "Romec, Arthur", school: "TBS" },
+  { name: "Romulo, Alves", school: "SKEMA" },
+  { name: "Ronchetti, Diego", school: "Audencia" },
+  { name: "Rostova, Natalia", school: "EDHEC" },
+  { name: "Saint-Jean, Victor", school: "ESSEC" },
+  { name: "Salvadè, Federica", school: "PSB" },
+  { name: "Saurin, Sébastien", school: "HEC" },
+  { name: "Saxena, Konark", school: "ESCP" },
+  { name: "Six, Pierre", school: "NEOMA" },
+  { name: "Tena, Vincent", school: "Dauphine" },
+  { name: "Tresl, Jiri", school: "PSB" },
+  { name: "Triantafyllou, Athanasios", school: "Audencia" },
+  { name: "Vyas, Hitesh", school: "Audencia" },
+  { name: "Zaremba, Adam", school: "MBS" },
+  { name: "Zhao, Lei", school: "ESCP" },
+  { name: "Zhou, Feng", school: "TBS" }
+];
+
+const TOTAL = participants.length;
+document.getElementById('total').textContent = TOTAL;
+
+const courses = [
+  { id: "starter", label: "Starter", options: ["Asparagus panna cotta", "Duck foie gras terrine"] },
+  { id: "main", label: "Main", options: ["Monkfish medallion", "Roasted lamb noisette", "🌿 Vegetarian"] },
+  { id: "dessert", label: "Dessert", options: ["Chocolate tart", "Seasonal macaron"] }
+];
+
+const state = {};
+const STORAGE_KEY = "fibs2026-dinner-choices";
+
+function nameToKey(name) {
+  return name.toLowerCase().replace(/[^a-z]/g, '');
+}
+
+// --- Storage: shared (window.storage) + localStorage fallback ---
+async function saveToStorage() {
+  const data = {};
+  participants.forEach(p => {
+    const k = nameToKey(p.name);
+    if (state[k]) data[k] = state[k];
+  });
+  const json = JSON.stringify(data);
+  try {
+    if (window.storage && window.storage.set) {
+      await window.storage.set(STORAGE_KEY, json, true);
+    }
+  } catch(e) {}
+  try { localStorage.setItem(STORAGE_KEY, json); } catch(e) {}
+  flashSave();
+}
+
+async function loadFromStorage() {
+  let data = null;
+  try {
+    if (window.storage && window.storage.get) {
+      const result = await window.storage.get(STORAGE_KEY, true);
+      if (result && result.value) data = JSON.parse(result.value);
+    }
+  } catch(e) {}
+  if (!data) {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) data = JSON.parse(raw);
+    } catch(e) {}
+  }
+  if (data) {
+    Object.keys(data).forEach(k => { state[k] = data[k]; });
+  }
+  render();
+  document.getElementById('loading').style.display = 'none';
+}
+
+function flashSave() {
+  const el = document.getElementById('save-indicator');
+  el.textContent = '✓ Saved — visible to all editors';
+  el.classList.add('flash');
+  setTimeout(() => { el.classList.remove('flash'); el.textContent = ''; }, 2200);
+}
+
+function render() {
+  const container = document.getElementById('participants-list');
+  container.innerHTML = '';
+  participants.forEach(p => {
+    const k = nameToKey(p.name);
+    if (!state[k]) state[k] = { starter: null, main: null, dessert: null, validated: false };
+    const s = state[k];
+    const card = document.createElement('div');
+    card.className = 'participant-card' + (s.validated ? ' validated' : '');
+    card.innerHTML = `
+      <div class="participant-header">
+        <div>
+          <div class="participant-name">${p.name}</div>
+          <div class="participant-school">${p.school}</div>
+        </div>
+        <span class="participant-badge ${s.validated ? 'badge-validated' : 'badge-pending'}">
+          ${s.validated ? '✓ Validated' : 'Pending'}
+        </span>
+      </div>
+      <div class="selections">
+        ${courses.map(c => `
+          <div class="course-group">
+            <label>${c.label}</label>
+            <div class="radio-group">
+              ${c.options.map((opt, oi) => `
+                <label class="radio-option">
+                  <input type="radio" name="${k}_${c.id}" value="${oi}"
+                    ${s[c.id] === oi ? 'checked' : ''}
+                    ${s.validated ? 'disabled' : ''}
+                    onchange="selectChoice('${k}','${c.id}',${oi})">
+                  <span class="radio-label">${opt}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="validate-row">
+        ${s.validated ? `<button class="btn-reset" onclick="resetParticipant('${k}')">Reset</button>` : ''}
+        <button class="btn-validate ${s.validated ? 'done' : ''}"
+          onclick="validateParticipant('${k}')"
+          ${s.validated ? 'disabled' : ''}>
+          ${s.validated ? '✓ Confirmed' : 'Validate'}
+        </button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  updateCounter();
+}
+
+function selectChoice(key, course, value) { state[key][course] = value; }
+
+function validateParticipant(key) {
+  const s = state[key];
+  if (s.starter === null || s.main === null || s.dessert === null) {
+    alert('Please select one option for each course before validating.');
+    return;
+  }
+  s.validated = true;
+  render();
+  saveToStorage();
+}
+
+function resetParticipant(key) {
+  state[key] = { starter: null, main: null, dessert: null, validated: false };
+  render();
+  saveToStorage();
+}
+
+function updateCounter() {
+  document.getElementById('counter').textContent = Object.values(state).filter(s => s.validated).length;
+}
+
+function exportChoices() {
+  let csv = 'Name,School,Starter,Main,Dessert\n';
+  participants.forEach(p => {
+    const k = nameToKey(p.name);
+    const s = state[k];
+    if (!s || !s.validated) return;
+    csv += `"${p.name}","${p.school}","${courses[0].options[s.starter]}","${courses[1].options[s.main]}","${courses[2].options[s.dessert]}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'FIBS_2026_Dinner_Choices.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+loadFromStorage();
+</script>
+</body>
+</html>
