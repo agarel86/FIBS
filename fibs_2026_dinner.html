@@ -483,6 +483,31 @@ function selectChoice(course, value) {
   state[selectedKey][course] = value;
 }
 
+// ── Google Sheet backup ──
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxsMiVAWGccBZygqR2yqvIpczBZyzKJYI-69uFawciNEXTbkibL4HGzP9YHJKzcVQ4W7Q/exec";
+
+function postToGoogleSheet(participantKey) {
+  const p = participants.find(x => nameToKey(x.name) === participantKey);
+  if (!p) return;
+  const s = state[participantKey];
+  if (!s || !s.validated) return;
+
+  const payload = {
+    name: p.name,
+    school: p.school,
+    starter: courses[0].options[s.starter],
+    main: courses[1].options[s.main],
+    dessert: courses[2].options[s.dessert]
+  };
+
+  fetch(SHEET_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).catch(e => console.warn("Sheet post failed:", e));
+}
+
 function validateMyChoice() {
   if (!selectedKey) return;
   const s = state[selectedKey];
@@ -494,6 +519,7 @@ function validateMyChoice() {
   renderMyCard();
   renderSummary();
   saveToStorage();
+  postToGoogleSheet(selectedKey);
 }
 
 function resetMyChoice() {
